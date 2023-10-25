@@ -1,0 +1,5 @@
+package foo
+
+class FooItemsService {
+
+}
