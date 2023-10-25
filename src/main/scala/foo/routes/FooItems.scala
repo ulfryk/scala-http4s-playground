@@ -1,33 +1,27 @@
 package foo.routes
 
 import cats.data.Validated.{Invalid, Valid}
+import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
-import foo.dto.FooItemApiId
-import foo.model.{FooItemId, FooItemType}
+import cats.implicits.*
+import foo.dto.{FooItemApiId, FooItemsFilter, NameQueryParam, TypeQueryParam}
+import foo.model.FooItemId
 import org.http4s.*
 import org.http4s.dsl.io.*
 
-import scala.util.Try
+private val allIds = List(54321, 54322, 6543212, 123413, 1115)
+private val ids = allIds.map(FooItemId(_).toApiString)
 
-
-implicit val typeQueryParamDecoder: QueryParamDecoder[FooItemType] =
-  QueryParamDecoder[String]
-    .emap(i => Try(FooItemType.valueOf(i))
-      .toEither
-      .left.map(t => ParseFailure(t.getMessage, t.getMessage)))
-
-object TypeQueryParamMatcher extends OptionalMultiQueryParamDecoderMatcher[FooItemType]("type")
-
-val allIds = List(54321, 54322, 6543212, 123413, 1115)
+private def listIt(filter: Validated[NonEmptyList[ParseFailure], FooItemsFilter]) =
+  filter match
+    case Invalid(e) => BadRequest(e.foldLeft("")((acc, next) => acc + next))
+    case Valid(a) => Ok(s"Hello $ids (${a})")
 
 val fooItemsRoutes = HttpRoutes.of[IO] {
-  case GET -> Root / "foo-items" :? TypeQueryParamMatcher(itemType) =>
-    val ids = allIds.map(FooItemId(_).toApiString)
-    itemType match
-      case Invalid(e) => BadRequest(e.foldLeft("")((acc, next) => acc + next))
-      case Valid(a) => a match
-        case Nil => Ok(s"Hello $ids")
-        case list => Ok(s"Hello $ids ($list)")
+  case GET -> Root / "foo-items-xx" :? FooItemsFilter.Matcher(filter) => listIt(filter)
+  case GET -> Root / "foo-items-yy" :? FooItemsFilter.Matcher2(filter) => listIt(filter)
+  case GET -> Root / "foo-items" :? TypeQueryParam.Matcher(itemType) +& NameQueryParam.Matcher(itemName) =>
+    listIt(FooItemsFilter(itemName, itemType))
 
   case GET -> Root / "foo-items" / FooItemApiId(id) =>
     id match

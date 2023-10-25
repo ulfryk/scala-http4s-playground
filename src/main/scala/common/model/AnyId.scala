@@ -22,13 +22,13 @@ case class HashMalformed(hashed: String, cause: Throwable) extends IdParsingFail
 
 class AnyId(private val prefix: String):
 
-  opaque type Id = Long
+  opaque type Identifier = Long
 
-  def create(id: Long): Id = id
+  def create(id: Long): Identifier = id
 
-  def apply(id: Long): Id = id
+  def apply(id: Long): Identifier = id
 
-  def fromString(id: String): ValidatedNec[IdParsingFail, Id] =
+  def fromString(id: String): ValidatedNec[IdParsingFail, Identifier] =
     (for {
       x <- splitRawId(id)
       _ <- checkPrefix(x._1)
@@ -51,6 +51,6 @@ class AnyId(private val prefix: String):
       case single :: Nil => Left(IdHasSingleSegment(single))
       case Nil => Left(IdIsEmpty)
 
-  extension (theId: Id)
+  extension (theId: Identifier)
     // how to override build in toString ?
     def toApiString: String = s"${prefix}_${theId.toHexString}"

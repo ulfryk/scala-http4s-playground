@@ -3,6 +3,7 @@ package common.dto
 import cats.data.Validated.invalidNec
 import cats.data.{NonEmptyChain, Validated, ValidatedNec}
 import common.model.{AnyId, IdParsingFail}
+import common.helpers.some
 
 
 sealed trait InvalidPathId:
@@ -17,6 +18,6 @@ case class MalformedId(found: String, cause: IdParsingFail) extends InvalidPathI
 trait ApiAnyId[T <: AnyId]:
   protected val impl: T
 
-  def unapply(str: String): Option[ValidatedNec[InvalidPathId, impl.Id]] =
+  def unapply(str: String): Option[ValidatedNec[InvalidPathId, impl.Identifier]] =
     if (str.isEmpty) invalidNec(MissingId()).some
     else impl.fromString(str).leftMap(_.map(e => MalformedId(str, e))).some
