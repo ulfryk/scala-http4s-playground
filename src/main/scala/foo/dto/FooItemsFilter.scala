@@ -8,10 +8,13 @@ import foo.model.{FooItemName, FooItemType}
 import org.http4s.ParseFailure
 
 
-case class FooItemsFilter(name: Option[FooItemName], `type`: Option[NonEmptyList[FooItemType]])
+case class FooItemsFilter(
+  name: Option[FooItemName],
+  `type`: Option[NonEmptyList[FooItemType]],
+)
 
 object FooItemsFilter:
-  
+
   def apply(
     nameParams: Option[ValidatedNel[ParseFailure, FooItemName]],
     typeParams: ValidatedNel[ParseFailure, List[FooItemType]],
@@ -19,7 +22,7 @@ object FooItemsFilter:
     (nameParams.swapInnerValidated, typeParams).mapN { (n, t) =>
       FooItemsFilter(n, NonEmptyList.fromList(t))
     }
-  
+
   object Matcher:
     def unapply(
       params: Map[String, collection.Seq[String]]

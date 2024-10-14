@@ -9,7 +9,7 @@ class FooItemsService:
   private val allIds = List(54321, 54322, 6543212, 123413, 1115)
   private val ids = allIds.map(FooItemId(_).toApiString)
 
-  private var repository: ListMap[FooItemId, FooItem] =
+  private val repository: ListMap[FooItemId, FooItem] =
     val items = (FooItem(FooItemId(54321), FooItemName("first"), "asfasdfasdfas", FooItemType.PLAIN) ::
       FooItem(FooItemId(54322), FooItemName("second"), "asfasdf<br/>asdfas", FooItemType.RICH) ::
       FooItem(FooItemId(6543212), FooItemName("third"), "asfasdfasdfas", FooItemType.PLAIN) ::
@@ -20,7 +20,10 @@ class FooItemsService:
     ListMap.from(items)
 
   def getAll(filter: FooItemsFilter): (FooItemsFilter, List[FooItem]) =
-    (filter, repository.toList.map(_._2))
+    (filter, repository.values.filter(i =>
+      filter.`type`.fold(true)(_.toList.contains(i.`type`)) &&
+        filter.name.fold(true)(f => i.name.value.toLowerCase.contains(f.value.toLowerCase))
+    ).toList)
 
   def getOne(id: FooItemId): Option[FooItem] =
     repository.get(id)

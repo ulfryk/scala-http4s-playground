@@ -11,12 +11,10 @@ object Main extends IOApp:
   private val httpApp = Router("/" -> fooItemsRoutes(fooService)).orNotFound
 
   def run(args: List[String]): IO[ExitCode] =
-    
-    
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")
-      .withPort(port"8080")
+      .withPort(port"8111")
       .withHttpApp(httpApp)
       .build
       .use(_ => IO.never)

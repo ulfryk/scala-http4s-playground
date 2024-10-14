@@ -9,6 +9,7 @@ import foo.dto.{FooItemApiId, FooItemsFilter, NameQueryParam, TypeQueryParam}
 import foo.model.FooItemId
 import org.http4s.*
 import org.http4s.dsl.io.*
+import org.log4s.Logger
 
 private val allIds = List(54321, 54322, 6543212, 123413, 1115)
 private val ids = allIds.map(FooItemId(_).toApiString)
@@ -20,11 +21,11 @@ private def listIt(filter: Validated[NonEmptyList[ParseFailure], FooItemsFilter]
       val r = service.getAll(a)
       s"FooItemList :: ids: ${r._2.map(_.id)}\n"
         ++ "---------------------------------------------------------------------------------------------\n"
-        ++ r._2.foldLeft("") { (acc, next) => acc ++ s"${next}\n" }
+        ++ r._2.foldLeft("") { (acc, next) => acc ++ s"${next.id.toApiString} $next\n" }
         ++ "---------------------------------------------------------------------------------------------\n"
-        ++ s"filter: ${filter}"
+      ++
+      s"filter: $filter"
     }
-
 
 def fooItemsRoutes(service: FooItemsService) = HttpRoutes.of[IO] {
   case GET -> Root / "foo-items-xx" :? FooItemsFilter.Matcher(filter) => listIt(filter)(using service)

@@ -1,4 +1,5 @@
-val http4sVersion = "0.23.23"
+val http4sVersion = "0.23.27"
+val scalaStaticVersion = "3.2.18"
 
 lazy val root = project
   .in(file("."))
@@ -9,10 +10,11 @@ lazy val root = project
     scalaVersion := "3.3.1",
 
     libraryDependencies ++= Seq(
-      "org.scalactic" %% "scalactic" % "3.2.17",
-      "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+      "org.scalactic" %% "scalactic" % scalaStaticVersion,
+      "org.scalatest" %% "scalatest" % scalaStaticVersion % Test,
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
+      "org.slf4j" % "slf4j-simple" % "2.0.13",
     )
   )
