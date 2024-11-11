@@ -13,7 +13,7 @@ import natchez.Trace.Implicits.noop
 import org.http4s.*
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.middleware.Logger
-import org.http4s.server.{Router}
+import org.http4s.server.Router
 import pureconfig.ConfigSource
 import skunk.*
 
@@ -30,6 +30,7 @@ object Main extends IOApp:
     user = conf.username,
     database = conf.database,
     password = Some(conf.password),
+    debug = true,
   )
 
   private def startServer(service: FooItemsService[IO]): IO[Unit] =
