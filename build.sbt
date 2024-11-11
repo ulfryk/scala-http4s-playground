@@ -12,6 +12,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "org.scalactic" %% "scalactic" % scalaStaticVersion,
       "org.scalatest" %% "scalatest" % scalaStaticVersion % Test,
+      "com.comcast" %% "ip4s-core" % "3.6.0",
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
