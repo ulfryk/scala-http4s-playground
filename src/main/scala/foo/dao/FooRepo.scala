@@ -7,7 +7,6 @@ import cats.syntax.all.*
 import foo.dto.FooItemsFilter
 import foo.model.*
 import skunk.*
-import skunk.codec.all.*
 import skunk.syntax.all.*
 
 class FooRepo[F[_] : Concurrent : Console] private(private val session: Session[F]) {
@@ -23,9 +22,8 @@ class FooRepo[F[_] : Concurrent : Console] private(private val session: Session[
 
   def findItem(id: FooItemId): F[Option[FooItem]] =
     for
-      query <- session.prepare(sql"SELECT * FROM foo_items WHERE id = $int8".query(decFooItem))
-      found <- id match
-        case FooItemId(idVal) => query.option(idVal)
+      query <- session.prepare(sql"SELECT * FROM foo_items WHERE id = $encFooId".query(decFooItem))
+      found <- query.option(id)
     yield found
 
   def findItems(filter: FooItemsFilter): F[List[FooItem]] =

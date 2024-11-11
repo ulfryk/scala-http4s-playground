@@ -5,6 +5,14 @@ import foo.model.*
 import skunk.*
 import skunk.codec.all.*
 
+private val codecFooId: Codec[FooItemId] =
+  int8.imap(FooItemId.apply) { 
+      case FooItemId(idVal) => idVal
+  }
+  
+private[dao] val encFooId: Encoder[FooItemId] = codecFooId.asEncoder
+private[dao] val decFooId: Decoder[FooItemId] = codecFooId.asDecoder
+
 private val codecFooType: Codec[FooItemType] =
   varchar(256).imap(FooItemType.valueOf) {
     _.toString
@@ -27,6 +35,6 @@ private[dao] val encNewFooItem: Encoder[NewFooItem] =
   }
 
 private[dao] val decFooItem: Decoder[FooItem] =
-  (int8, decFooName, text, decFooType).tupled.map {
-    case (id, fooName, fooText, fooType) => FooItem(FooItemId(id), fooName, fooText, fooType)
+  (decFooId, decFooName, text, decFooType).tupled.map {
+    case (id, fooName, fooText, fooType) => FooItem(id, fooName, fooText, fooType)
   }
