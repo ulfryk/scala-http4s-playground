@@ -11,11 +11,11 @@ import scala.util.Try
 object TypeQueryParam:
   object Matcher extends OptionalMultiQueryParamDecoderMatcher[FooItemType]("type")
 
-  def validateFooItemTypeFromString(i: String): ValidatedNel[ParseFailure, FooItemType] =
+  private def validateFooItemTypeFromString(i: String): ValidatedNel[ParseFailure, FooItemType] =
     Validated.fromTry(Try(FooItemType.valueOf(i)))
       .leftMap(t => ParseFailure(t.getMessage, t.getMessage))
       .toValidatedNel
 
-  implicit val typeQueryParamDecoder: QueryParamDecoder[FooItemType] =
+  private given typeQueryParamDecoder: QueryParamDecoder[FooItemType] =
     QueryParamDecoder[String].emapValidatedNel(validateFooItemTypeFromString)
 

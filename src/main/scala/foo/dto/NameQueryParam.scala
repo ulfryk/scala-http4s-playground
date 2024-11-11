@@ -9,11 +9,11 @@ import org.http4s.{ParseFailure, QueryParamDecoder}
 object NameQueryParam:
   object Matcher extends OptionalValidatingQueryParamDecoderMatcher[FooItemName]("name")
 
-  def validateFooItemNameFromString(i: String): ValidatedNel[ParseFailure, FooItemName] =
+  private def validateFooItemNameFromString(i: String): ValidatedNel[ParseFailure, FooItemName] =
    if (i.isEmpty || i.isBlank || i.trim.length < 3) invalidNel {
       ParseFailure(sanitized = s"invalid name '$i'", details = "")
     }
     else validNel(FooItemName(i))
 
-  implicit val nameQueryParamDecoder: QueryParamDecoder[FooItemName] =
+  private given nameQueryParamDecoder: QueryParamDecoder[FooItemName] =
     QueryParamDecoder[String].emapValidatedNel(validateFooItemNameFromString)

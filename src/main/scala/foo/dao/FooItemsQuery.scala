@@ -11,10 +11,11 @@ import skunk.syntax.all.*
 
 case class FooItemsQuery(
   itemName: Option[AppliedFragment],
+  itemText: Option[AppliedFragment],
   itemType: Option[AppliedFragment],
 ) {
   def asFragment: AppliedFragment =
-    val conditions = List(itemName, itemType).flatten
+    val conditions = List(itemName, itemText, itemType).flatten
     if (conditions.isEmpty) AppliedFragment.empty
     else conditions.foldSmash(void" WHERE ", void" AND ", AppliedFragment.empty)
 }
@@ -23,11 +24,15 @@ object FooItemsQuery:
   def apply(filter: FooItemsFilter): FooItemsQuery =
     new FooItemsQuery(
       itemName = filter.name.map(nameSql),
+      itemText = filter.text.map(textSql),
       itemType = filter.`type`.map(typeMultiSql)
     )
 
   private val encFooNameILike: Encoder[FooItemName] = text.contramap(v => s"%${v.value}%")
   private val nameSql = sql"item_name ILIKE $encFooNameILike"
+
+  private val encFooTextILike: Encoder[String] = text.contramap(v => s"%$v%")
+  private val textSql = sql"item_text ILIKE $encFooTextILike"
 
   private def typeMultiSql(types: NonEmptyList[FooItemType]) =
     if (types.tail.isEmpty) sql"item_type = $encFooType"(types.head)
