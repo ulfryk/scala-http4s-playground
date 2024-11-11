@@ -1,8 +1,10 @@
 package foo.dao
 
 import cats.*
+import cats.data.NonEmptyList
 import cats.syntax.all.*
 import foo.dto.FooItemsFilter
+import foo.model.{FooItemName, FooItemType}
 import skunk.*
 import skunk.codec.all.*
 import skunk.syntax.all.*
@@ -20,9 +22,13 @@ case class FooItemsQuery(
 object FooItemsQuery:
   def apply(filter: FooItemsFilter): FooItemsQuery =
     new FooItemsQuery(
-      itemName = filter.name.map(n => s"%${n.value}%").map(nameSql),
-      itemType = filter.`type`.map(_.head.toString).map(typeSql)
+      itemName = filter.name.map(nameSql),
+      itemType = filter.`type`.map(typeMultiSql)
     )
 
-  private val nameSql = sql"item_name ILIKE $varchar"
-  private val typeSql = sql" item_type = ${varchar(256)}"
+  private val encFooNameILike: Encoder[FooItemName] = text.contramap(v => s"%${v.value}%")
+  private val nameSql = sql"item_name ILIKE $encFooNameILike"
+
+  private def typeMultiSql(types: NonEmptyList[FooItemType]) =
+    if (types.tail.isEmpty) sql"item_type = $encFooType"(types.head)
+    else sql"item_type IN (${encFooType.list(types.size)})"(types.toList)

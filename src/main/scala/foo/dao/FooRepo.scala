@@ -35,17 +35,6 @@ class FooRepo[F[_] : Concurrent : Console] private(private val session: Session[
     val base = sql"SELECT * FROM foo_items"
     base(Void) |+| query.asFragment
 
-  private val encNewFooItem: Encoder[NewFooItem] =
-    (text, text, varchar(256)).tupled.contramap {
-      case NewFooItem(FooItemName(fooName), fooText, fooType) => (fooName, fooText, fooType.toString)
-    }
-
-  private val decFooItem: Decoder[FooItem] =
-    (int8, text, text, varchar(256)).tupled.map {
-      case (id, fooName, fooText, fooType) =>
-        FooItem(FooItemId(id), FooItemName(fooName), fooText, FooItemType.valueOf(fooType))
-    }
-
 }
 
 object FooRepo:
