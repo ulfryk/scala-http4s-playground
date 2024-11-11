@@ -2,5 +2,5 @@ package foo.model
 
 import common.model.AnyId
 
-val FooItemId = new AnyId("foo")
+object FooItemId extends AnyId("foo")
 type FooItemId = FooItemId.Identifier

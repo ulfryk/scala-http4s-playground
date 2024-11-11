@@ -1,6 +1,5 @@
 package foo.dto
 
-import cats.data.Validated.validNel
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits.*
 import common.helpers.swapInnerValidated
@@ -14,6 +13,7 @@ case class FooItemsFilter(
 )
 
 object FooItemsFilter:
+  final val empty = FooItemsFilter(None, None)
 
   def apply(
     nameParams: Option[ValidatedNel[ParseFailure, FooItemName]],
@@ -22,26 +22,3 @@ object FooItemsFilter:
     (nameParams.swapInnerValidated, typeParams).mapN { (n, t) =>
       FooItemsFilter(n, NonEmptyList.fromList(t))
     }
-
-  object Matcher:
-    def unapply(
-      params: Map[String, collection.Seq[String]]
-    ): Option[ValidatedNel[ParseFailure, FooItemsFilter]] =
-      for {
-        nameParams <- NameQueryParam.Matcher.unapply(params)
-        typeParams <- TypeQueryParam.Matcher.unapply(params)
-      } yield FooItemsFilter(nameParams, typeParams)
-
-  object Matcher2:
-    def unapply(
-      params: Map[String, collection.Seq[String]]
-    ): Option[ValidatedNel[ParseFailure, FooItemsFilter]] =
-
-      val nameParams = params.get("name").flatMap(_.headOption)
-        .map(NameQueryParam.validateFooItemNameFromString)
-
-      val typeParams = params.get("type")
-        .map(_.toList.traverse(TypeQueryParam.validateFooItemTypeFromString))
-        .getOrElse(validNel(Nil))
-
-      FooItemsFilter(nameParams, typeParams).some

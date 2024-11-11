@@ -6,38 +6,43 @@ import cats.effect.IO
 import cats.implicits.*
 import foo.FooItemsService
 import foo.dto.{FooItemApiId, FooItemsFilter, NameQueryParam, TypeQueryParam}
-import foo.model.FooItemId
+import foo.model.{FooItem, FooItemId}
 import org.http4s.*
 import org.http4s.dsl.io.*
-import org.log4s.Logger
 
-private val allIds = List(54321, 54322, 6543212, 123413, 1115)
-private val ids = allIds.map(FooItemId(_).toApiString)
-
-private def listIt(filter: Validated[NonEmptyList[ParseFailure], FooItemsFilter])(using service: FooItemsService) =
+private def listIt(
+  filter: Validated[NonEmptyList[ParseFailure], FooItemsFilter],
+  service: FooItemsService[IO],
+): IO[Response[IO]] =
   filter match
     case Invalid(e) => BadRequest(e.foldLeft("")((acc, next) => acc + next))
-    case Valid(a) => Ok {
-      val r = service.getAll(a)
-      s"FooItemList :: ids: ${r._2.map(_.id)}\n"
-        ++ "---------------------------------------------------------------------------------------------\n"
-        ++ r._2.foldLeft("") { (acc, next) => acc ++ s"${next.id.toApiString} $next\n" }
-        ++ "---------------------------------------------------------------------------------------------\n"
-      ++
-      s"filter: $filter"
-    }
+    case Valid(a) =>
+      for
+        r <- service.getAll(a)
+        resp <- Ok(listRespText(r._1, r._2))
+      yield resp
 
-def fooItemsRoutes(service: FooItemsService) = HttpRoutes.of[IO] {
-  case GET -> Root / "foo-items-xx" :? FooItemsFilter.Matcher(filter) => listIt(filter)(using service)
-  case GET -> Root / "foo-items-yy" :? FooItemsFilter.Matcher2(filter) => listIt(filter)(using service)
+private def listRespText(filter: FooItemsFilter, items: List[FooItem]): String =
+  s"FooItemList :: ids: ${items.map(_.id)}\n"
+    ++ "---------------------------------------------------------------------------------------------\n"
+    ++ items.foldLeft("") { (acc, next) => acc ++ s"${next.id.toApiString} $next\n" }
+    ++ "---------------------------------------------------------------------------------------------\n"
+  ++
+  s"filter: $filter"
+
+def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
   case GET -> Root / "foo-items" :? TypeQueryParam.Matcher(itemType) +& NameQueryParam.Matcher(itemName) =>
-    listIt(FooItemsFilter(itemName, itemType))(using service)
+    listIt(FooItemsFilter(itemName, itemType), service)
 
   case GET -> Root / "foo-items" / FooItemApiId(id) =>
     id match
       case Valid(idVal) =>
-        if allIds.contains(idVal) then Ok(s"whatever ${idVal.toApiString}")
-        else NotFound(s"couldn't find ${idVal.toApiString}")
+        for
+          found <- service.getOne(idVal)
+          resp <- found match
+            case Some(item) => Ok(listRespText(FooItemsFilter.empty, List(item)))
+            case None => NotFound(s"couldn't find ${idVal.toApiString}")
+        yield resp
       case Invalid(es) => BadRequest {
         es.foldLeft("")((txt, next) => txt ++ next.message)
       }

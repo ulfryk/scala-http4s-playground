@@ -24,9 +24,9 @@ class AnyId(private val prefix: String):
 
   opaque type Identifier = Long
 
-  def create(id: Long): Identifier = id
-
   def apply(id: Long): Identifier = id
+  
+  def unapply(id: Identifier): Option[Long] = Some(id)
 
   def fromString(id: String): ValidatedNec[IdParsingFail, Identifier] =
     (for {
@@ -47,10 +47,10 @@ class AnyId(private val prefix: String):
   private def splitRawId(raw: String): Either[IdParsingFail, (String, String)] =
     raw.split("_").toList match
       case prefix :: value :: Nil => Right((prefix, value))
-      case all@one :: two :: _ => Left(IdHasTooManySegments(all *))
+      case all@_ :: _ :: _ => Left(IdHasTooManySegments(all *))
       case single :: Nil => Left(IdHasSingleSegment(single))
       case Nil => Left(IdIsEmpty)
 
   extension (theId: Identifier)
     // how to override build in toString ?
-    def toApiString: String = s"${prefix}_${theId.toHexString}"
+    def toApiString: String = s"${prefix}_${theId.toHexString.reverse.padTo(10, '0').reverse}"

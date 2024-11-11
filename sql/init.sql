@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS foo_items (
+  id BIGSERIAL PRIMARY KEY,
+  item_name TEXT NOT NULL,
+  item_text TEXT NOT NULL,
+  item_type VARCHAR(256) NOT NULL
+)
