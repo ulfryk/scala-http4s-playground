@@ -6,9 +6,12 @@ import cats.effect.IO
 import cats.implicits.*
 import foo.FooItemsService
 import foo.dto.*
-import foo.model.{FooItem, FooItemId}
+import foo.model.*
+import fs2.*
 import org.http4s.*
 import org.http4s.dsl.io.*
+
+import scala.util.Try
 
 private def listIt(
   filter: Validated[NonEmptyList[ParseFailure], FooItemsFilter],
@@ -30,7 +33,28 @@ private def listRespText(filter: FooItemsFilter, items: List[FooItem]): String =
   ++
   s"filter: $filter"
 
+private def bodyFromText(body: String): Either[String, NewFooItem] =
+  if (body.contains("\n")) Left("multiline")
+  else if (body.isBlank) Left("empty")
+  else body.split(",").toList match
+    case _ :: _ :: _ :: _ :: _ => Left("too many tokens")
+    case fooName :: fooText :: fooType :: Nil =>
+      Try(FooItemType.valueOf(fooType))
+        .toEither.leftMap(_.getMessage)
+        .map(NewFooItem(FooItemName(fooName), fooText, _))
+    case _ :: _ :: Nil | _ :: Nil => Left("too few tokens")
+    case Nil => Left("empty")
+
 def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
+  case req@POST -> Root / "foo-items" =>
+    for
+      body <- req.body.compile.toList.map(_.map(_.toChar).mkString)
+      resp <- bodyFromText(body) match
+        case Left(err) => BadRequest(err)
+        case Right(inp) => service.create(inp)
+          .flatMap(c => Ok(listRespText(FooItemsFilter.empty, List(c))))
+    yield resp
+
   case GET -> Root / "foo-items"
     :? TypeQueryParam.Matcher(itemType)
     +& NameQueryParam.Matcher(itemName)

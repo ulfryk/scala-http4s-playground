@@ -6,18 +6,20 @@ import cats.effect.std.Console
 import cats.syntax.all.*
 import foo.dto.FooItemsFilter
 import foo.model.*
+import skunk.*
 import skunk.codec.all.*
 import skunk.syntax.all.*
-import skunk.{Codec, *}
 
 class FooRepo[F[_] : Concurrent : Console] private(private val session: Session[F]) {
 
-  def createItem(fooItem: NewFooItem): F[Unit] =
-    for
-      command <- session.prepare(sql"INSERT INTO foo_items (item_name, item_text, item_type) values ($encNewFooItem)".command)
-      rowCount <- command.execute(fooItem)
-      _ <- Console[F].println(s"Inserted $rowCount rows")
-    yield ()
+  def createItem(fooItem: NewFooItem): F[FooItem] =
+    session.prepare(
+      sql"""
+        INSERT INTO foo_items (item_name, item_text, item_type)
+        VALUES ($encNewFooItem)
+        RETURNING *
+      """.query(decFooItem)
+    ).flatMap(_.unique(fooItem))
 
   def findItem(id: FooItemId): F[Option[FooItem]] =
     for
