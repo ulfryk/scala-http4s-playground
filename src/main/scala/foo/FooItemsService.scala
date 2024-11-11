@@ -10,9 +10,7 @@ import foo.model.{FooItem, FooItemId}
 class FooItemsService[F[_] : Concurrent : Console](repo: FooRepo[F]):
 
   def getAll(filter: FooItemsFilter): F[(FooItemsFilter, List[FooItem])] =
-    for
-      found <- repo.findItems(filter)
-    yield (filter, found)
+    repo.findItems(filter).map((filter, _))
 
   def getOne(id: FooItemId): F[Option[FooItem]] =
     repo.findItem(id)
