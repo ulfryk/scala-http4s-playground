@@ -1,3 +1,7 @@
 package foo.model
 
-case class FooItemName(value: String)
+opaque type FooItemName = String
+
+object FooItemName:
+  def apply(txt: String): FooItemName = txt
+  def unapply(txt: FooItemName): Option[String] = Some(txt)

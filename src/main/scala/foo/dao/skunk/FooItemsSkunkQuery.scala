@@ -26,7 +26,7 @@ object FooItemsSkunkQuery:
       itemType = filter.`type`.map(typeMultiSql)
     )
 
-  private val encFooNameILike: Encoder[FooItemName] = text.contramap(v => s"%${v.value}%")
+  private val encFooNameILike: Encoder[FooItemName] = text.contramap(v => s"%$v%")
   private val nameSql = sql"item_name ILIKE $encFooNameILike"
 
   private val encFooTextILike: Encoder[FooItemText] = text.contramap(v => s"%$v%")

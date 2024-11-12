@@ -22,18 +22,14 @@ private[skunk] val encFooType: Encoder[FooItemType] = codecFooType.asEncoder
 private[skunk] val decFooType: Decoder[FooItemType] = codecFooType.asDecoder
 
 private val codecFooName: Codec[FooItemName] =
-  text.imap(FooItemName.apply) {
-    _.value
-  }
+  text.imap(FooItemName.apply) { case FooItemName(n) => n }
 
 private[skunk] val encFooName: Encoder[FooItemName] = codecFooName.asEncoder
 private[skunk] val decFooName: Decoder[FooItemName] = codecFooName.asDecoder
 
 private val codecFooText: Codec[FooItemText] =
-  text.imap(FooItemText.apply) {
-    FooItemText.unapplySafe
-  }
-  
+  text.imap(FooItemText.apply) { case FooItemText(t) => t }
+
 private[skunk] val encFooText: Encoder[FooItemText] = codecFooText.asEncoder
 private[skunk] val decFooText: Decoder[FooItemText] = codecFooText.asDecoder
 

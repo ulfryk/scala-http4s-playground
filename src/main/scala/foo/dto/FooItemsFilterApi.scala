@@ -9,8 +9,8 @@ import org.http4s.ParseFailure
 object FooItemsFilterApi:
   given toRaw: (FooItemsFilter => Seq[(String, String)]) = { f =>
     List(
-      f.name.map(n => ("name", n.value)),
-      f.text.map(t => ("text", FooItemText.unapplySafe(t))),
+      f.name.map { case FooItemName(n) => ("name", n) },
+      f.text.map { case FooItemText(t) => ("text", t) },
       f.`type`.map(tp => ("type", tp.toList.mkString("|")))
     ).flatten
   }

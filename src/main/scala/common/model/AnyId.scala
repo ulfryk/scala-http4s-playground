@@ -27,7 +27,6 @@ class AnyId(private val prefix: String):
   def apply(id: Long): Identifier = id
   
   def unapply(id: Identifier): Option[Long] = Some(id)
-  def unapplySafe(id: Identifier): Long = id
 
   def fromString(id: String): ValidatedNec[IdParsingFail, Identifier] =
     (for {

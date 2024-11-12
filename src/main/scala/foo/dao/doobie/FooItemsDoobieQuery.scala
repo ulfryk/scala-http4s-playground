@@ -18,7 +18,7 @@ final case class FooItemsDoobieQuery(
     else conditions.foldSmash(fr" WHERE", fr"AND", Fragment.empty)
 
 object FooItemsDoobieQuery:
-  private given putFooNameForILike: Put[FooItemName] = Put[String].contramap(n => s"%${n.value}%")
+  private given putFooNameForILike: Put[FooItemName] = Put[String].contramap(n => s"%$n%")
   private given putFooTextForILike: Put[FooItemText] = Put[String].contramap(t => s"%$t%")
   
   def apply(filter: FooItemsFilter): FooItemsDoobieQuery =
