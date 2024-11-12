@@ -7,7 +7,6 @@ import config.Config
 import doobie.LogHandler
 import doobie.util.log.LogEvent
 import doobie.util.transactor.Transactor
-import doobie.util.transactor.Transactor.Aux
 import foo.FooItemsService
 import foo.dao.doobie.FooRepoDoobie
 import foo.dao.skunk.FooRepoSkunk
@@ -23,33 +22,33 @@ import pureconfig.ConfigSource
 import skunk.*
 
 object Main extends IOApp:
-  private def httpAppLogged(service: FooItemsService[IO]): HttpApp[IO] = Logger.httpRoutes[IO](
-    logHeaders = true,
-    logBody = true,
-    logAction = Some((msg: String) => Console[IO].println(msg))
-  )(Router("/" -> fooItemsRoutes(service))).orNotFound
+  private def httpAppLogged(service: FooItemsService[IO]): HttpApp[IO] =
+    Logger.httpRoutes[IO](
+      logHeaders = true,
+      logBody = true,
+      logAction = Some((msg: String) => Console[IO].println(msg))
+    )(Router("/" -> fooItemsRoutes(service))).orNotFound
 
-  private def getSkunkSession[F[_] : Temporal : Trace : Network : Console](conf: Config) = Session.single(
-    host = conf.host,
-    port = conf.port,
-    user = conf.username,
-    database = conf.database,
-    password = Some(conf.password),
-    debug = true,
-  )
+  private def getSkunkSession[F[_] : Temporal : Trace : Network : Console](conf: Config) =
+    Session.single(
+      host = conf.host,
+      port = conf.port,
+      user = conf.username,
+      database = conf.database,
+      password = Some(conf.password),
+      debug = true,
+    )
 
-  private def printLogHandler[F[_] : Console]: LogHandler[F] = (logEvent: LogEvent) => Console[F].println(logEvent)
-
-  private def getDoobieTransactor[F[_] : Async : Console](conf: Config): Aux[F, Unit] =
+  private def getDoobieTransactor[F[_] : Async : Console](conf: Config) =
     Transactor.fromDriverManager[F](
       driver = "org.postgresql.Driver",
       url = s"jdbc:postgresql://${conf.host}:${conf.port}/${conf.database}",
       user = conf.username,
       password = conf.password,
-      logHandler = Some(printLogHandler) // Don't setup logging for now. See Logging page for how to log events in detail
+      logHandler = Some { logEvent => Console[F].println(logEvent) }
     )
 
-  private def startServer(service: FooItemsService[IO]): IO[Unit] =
+  private def startServer(service: FooItemsService[IO]) =
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")
@@ -67,10 +66,10 @@ object Main extends IOApp:
   private def runWithDoobie(config: Config) =
     val transactor = getDoobieTransactor[IO](config)
     val repo = FooRepoDoobie(transactor)
-    startServer(FooItemsService(repo))
+    val service = FooItemsService(repo)
+    startServer(service)
 
   def run(args: List[String]): IO[ExitCode] =
     ConfigSource.default.at("db").load[Config] match
       case Left(e) => IO.println(e.toString).as(ExitCode.Error)
-      case Right(c) => runWithDoobie(c)
-        .as(ExitCode.Success)
+      case Right(c) => runWithDoobie(c).as(ExitCode.Success)
