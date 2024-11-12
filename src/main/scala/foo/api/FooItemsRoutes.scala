@@ -3,15 +3,15 @@ package foo.api
 import _root_.io.circe.*
 import _root_.io.circe.generic.auto.*
 import _root_.io.circe.syntax.*
+import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
-import cats.data.{NonEmptyList, Validated}
 import cats.effect.*
 import cats.implicits.*
 import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
+import foo.api.dto.*
 import foo.api.dto.CircleCodecs.given
 import foo.api.dto.FooItemApiId.toApiString
 import foo.api.dto.FooItemsFilterApi.given
-import foo.api.dto.*
 import foo.domain.FooItemsService
 import foo.domain.model.NewFooItem
 import org.http4s.*
@@ -32,17 +32,15 @@ def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
     :? TypeQueryParam.Matcher(itemType)
     +& NameQueryParam.Matcher(itemName)
     +& TextQueryParam.Matcher(itemText) =>
-    FooItemsFilterApi(itemName, itemText, itemType) match
-      case Invalid(e) => BadRequest(e.foldLeft("")(_ + _))
-      case Valid(filter) =>
-        for
-          data <- service.getAll(filter)
-          resp <- Ok(data.asJson).map { x =>
-            x.copy(headers = x.headers
-              ++ `Pagination-Total-Count`(data.size)
-              ++ `Pagination-Applied-Filter`(filter))
-          }
-        yield resp
+    for
+      filter <- FooItemsFilterApi(itemName, itemText, itemType).raiseIoErrorOnFailure
+      data <- service.getAll(filter)
+      resp <- Ok(data.asJson).map { x =>
+        x.copy(headers = x.headers
+          ++ `Pagination-Total-Count`(data.size)
+          ++ `Pagination-Applied-Filter`(filter))
+      }
+    yield resp
 
   case GET -> Root / "foo-items" / FooItemApiId(id) =>
     id match

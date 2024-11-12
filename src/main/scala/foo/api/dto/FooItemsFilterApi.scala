@@ -1,6 +1,8 @@
 package foo.api.dto
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, ValidatedNel}
+import cats.effect.IO
 import cats.implicits.*
 import common.helpers.swapInnerValidated
 import foo.domain.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
@@ -23,3 +25,11 @@ object FooItemsFilterApi:
     (nameParams.swapInnerValidated, textParams.swapInnerValidated, typeParams).mapN { (n, tx, t) =>
       FooItemsFilter(n, tx, NonEmptyList.fromList(t))
     }
+
+final case class MalformedFilter(errs: NonEmptyList[ParseFailure]) extends RuntimeException:
+  override def getMessage = s"kaboom - failed to parse query filter due to: ${errs.toList.mkString(", ")}"
+
+extension (v: ValidatedNel[ParseFailure, FooItemsFilter])
+  def raiseIoErrorOnFailure: IO[FooItemsFilter] = v match
+    case Invalid(e) => IO.raiseError(MalformedFilter(e))
+    case Valid(filter) => IO.pure(filter)
