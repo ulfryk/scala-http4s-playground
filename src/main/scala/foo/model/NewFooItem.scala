@@ -2,6 +2,6 @@ package foo.model
 
 case class NewFooItem(
   name: FooItemName,
-  text: String,
+  text: FooItemText,
   `type`: FooItemType,
 )

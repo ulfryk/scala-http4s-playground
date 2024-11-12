@@ -3,8 +3,7 @@ package foo.dao.skunk
 import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
-import foo.dao.skunk.FooItemsSkunkQuery
-import foo.model.{FooItemName, FooItemType, FooItemsFilter}
+import foo.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
 import skunk.*
 import skunk.codec.all.*
 import skunk.syntax.all.*
@@ -30,7 +29,7 @@ object FooItemsSkunkQuery:
   private val encFooNameILike: Encoder[FooItemName] = text.contramap(v => s"%${v.value}%")
   private val nameSql = sql"item_name ILIKE $encFooNameILike"
 
-  private val encFooTextILike: Encoder[String] = text.contramap(v => s"%$v%")
+  private val encFooTextILike: Encoder[FooItemText] = text.contramap(v => s"%$v%")
   private val textSql = sql"item_text ILIKE $encFooTextILike"
 
   private def typeMultiSql(types: NonEmptyList[FooItemType]) =

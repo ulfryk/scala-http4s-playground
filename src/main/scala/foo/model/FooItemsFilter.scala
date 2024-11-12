@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 
 case class FooItemsFilter(
   name: Option[FooItemName],
-  text: Option[String],
+  text: Option[FooItemText],
   `type`: Option[NonEmptyList[FooItemType]],
 )
 

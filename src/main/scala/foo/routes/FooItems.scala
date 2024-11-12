@@ -47,7 +47,7 @@ private def bodyFromText(body: String): Either[String, NewFooItem] =
     case fooName :: fooText :: fooType :: Nil =>
       Try(FooItemType.valueOf(fooType))
         .toEither.leftMap(_.getMessage)
-        .map(NewFooItem(FooItemName(fooName), fooText, _))
+        .map(NewFooItem(FooItemName(fooName), FooItemText(fooText), _))
     case _ :: _ :: Nil | _ :: Nil => Left("too few tokens")
     case Nil => Left("empty")
 

@@ -2,19 +2,18 @@ package foo.dto
 
 import cats.data.Validated.{invalidNel, validNel}
 import cats.data.ValidatedNel
+import foo.model.FooItemText
 import org.http4s.dsl.io.OptionalValidatingQueryParamDecoderMatcher
 import org.http4s.{ParseFailure, QueryParamDecoder}
 
-case class Txt(txt: String)
-
 object TextQueryParam:
-  object Matcher extends OptionalValidatingQueryParamDecoderMatcher[Txt]("text")
+  object Matcher extends OptionalValidatingQueryParamDecoderMatcher[FooItemText]("text")
 
-  private def validateFooItemTextFromString(i: String): ValidatedNel[ParseFailure, Txt] =
+  private def validateFooItemTextFromString(i: String): ValidatedNel[ParseFailure, FooItemText] =
     if (i.isEmpty || i.isBlank || i.trim.length < 3) invalidNel {
       ParseFailure(sanitized = s"invalid name '$i'", details = "")
     }
-    else validNel(Txt(i))
+    else validNel(FooItemText(i))
 
-  private given textQueryParamDecoder: QueryParamDecoder[Txt] =
+  private given textQueryParamDecoder: QueryParamDecoder[FooItemText] =
     QueryParamDecoder[String].emapValidatedNel(validateFooItemTextFromString)
