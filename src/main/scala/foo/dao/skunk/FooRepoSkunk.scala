@@ -1,9 +1,10 @@
-package foo.dao
+package foo.dao.skunk
 
 import cats.*
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
+import foo.dao.FooRepo
 import foo.dto.FooItemsFilter
 import foo.model.*
 import skunk.*

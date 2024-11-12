@@ -9,7 +9,8 @@ import doobie.util.log.LogEvent
 import doobie.util.transactor.Transactor
 import doobie.util.transactor.Transactor.Aux
 import foo.FooItemsService
-import foo.dao.{FooRepoDoobie, FooRepoSkunk}
+import foo.dao.doobie.FooRepoDoobie
+import foo.dao.skunk.FooRepoSkunk
 import foo.routes.fooItemsRoutes
 import fs2.io.net.Network
 import natchez.Trace

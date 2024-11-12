@@ -1,8 +1,9 @@
-package foo.dao
+package foo.dao.skunk
 
 import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
+import foo.dao.skunk.FooItemsSkunkQuery
 import foo.dto.FooItemsFilter
 import foo.model.{FooItemName, FooItemType}
 import skunk.*

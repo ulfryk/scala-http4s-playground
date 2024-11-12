@@ -1,9 +1,10 @@
-package foo.dao
+package foo.dao.doobie
 
 import cats.Functor
 import cats.effect.Async
 import doobie.*
 import doobie.implicits.*
+import foo.dao.FooRepo
 import foo.dto.FooItemsFilter
 import foo.model.{FooItem, FooItemId, NewFooItem}
 
