@@ -13,6 +13,7 @@ import org.http4s.*
 import org.http4s.Header.*
 import org.http4s.dsl.io.*
 
+import java.nio.charset.StandardCharsets
 import scala.util.Try
 
 private def listIt(
@@ -52,7 +53,9 @@ private def bodyFromText(body: String): Either[String, NewFooItem] =
 def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
   case req@POST -> Root / "foo-items" =>
     for
-      body <- req.body.compile.toList.map(_.map(_.toChar).mkString)
+      body <- req.body.compile.toList.map {
+        bytes => new String(bytes.toArray, StandardCharsets.UTF_8)
+      }
       resp <- bodyFromText(body) match
         case Left(err) => BadRequest(err)
         case Right(inp) => service.create(inp)
