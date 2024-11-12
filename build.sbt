@@ -1,5 +1,6 @@
 val http4sVersion = "0.23.27"
 val scalaStaticVersion = "3.2.18"
+lazy val doobieVersion = "1.0.0-RC5"
 
 lazy val root = project
   .in(file("."))
@@ -18,6 +19,9 @@ lazy val root = project
       "org.http4s" %% "http4s-dsl" % http4sVersion,
       "org.slf4j" % "slf4j-simple" % "2.0.13",
       "org.tpolecat" %% "skunk-core" % "0.6.3",
-      "com.github.pureconfig" %% "pureconfig-core" % "0.17.7"
+      "com.github.pureconfig" %% "pureconfig-core" % "0.17.7",
+      "org.tpolecat" %% "doobie-core" % doobieVersion,
+      "org.tpolecat" %% "doobie-postgres" % doobieVersion,
+      "org.tpolecat" %% "doobie-specs2" % doobieVersion
     )
   )
