@@ -1,9 +1,9 @@
-package foo.dto
+package foo.api.dto
 
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits.*
 import common.helpers.swapInnerValidated
-import foo.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
+import foo.domain.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
 import org.http4s.ParseFailure
 
 object FooItemsFilterApi:

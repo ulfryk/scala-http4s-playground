@@ -1,4 +1,4 @@
-package common.dto
+package common.api.dto
 
 import cats.data.*
 import cats.data.Validated.*

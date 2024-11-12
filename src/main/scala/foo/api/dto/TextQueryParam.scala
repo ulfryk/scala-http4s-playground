@@ -1,8 +1,8 @@
-package foo.dto
+package foo.api.dto
 
 import cats.data.Validated.{invalidNel, validNel}
 import cats.data.ValidatedNel
-import foo.model.FooItemText
+import foo.domain.model.FooItemText
 import org.http4s.dsl.io.OptionalValidatingQueryParamDecoderMatcher
 import org.http4s.{ParseFailure, QueryParamDecoder}
 

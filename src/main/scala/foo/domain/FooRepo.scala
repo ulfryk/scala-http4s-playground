@@ -1,6 +1,6 @@
-package foo.dao
+package foo.domain
 
-import foo.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
+import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
 trait FooRepo[F[_]]:
 

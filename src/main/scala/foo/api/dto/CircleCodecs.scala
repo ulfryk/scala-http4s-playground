@@ -1,11 +1,11 @@
-package foo.dto
+package foo.api.dto
 
 import _root_.io.circe.*
 import _root_.io.circe.generic.auto.*
 import cats.effect.IO
-import common.dto.MalformedId
-import foo.dto.FooItemApiId.toApiString
-import foo.model.*
+import common.api.dto.MalformedId
+import FooItemApiId.toApiString
+import foo.domain.model.{FooItemId, FooItemName, FooItemText, FooItemType, NewFooItem}
 import org.http4s.EntityDecoder
 import org.http4s.circe.jsonOf
 

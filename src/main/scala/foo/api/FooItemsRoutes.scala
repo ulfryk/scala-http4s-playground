@@ -1,4 +1,4 @@
-package foo.routes
+package foo.api
 
 import _root_.io.circe.*
 import _root_.io.circe.generic.auto.*
@@ -8,12 +8,12 @@ import cats.data.{NonEmptyList, Validated}
 import cats.effect.*
 import cats.implicits.*
 import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
-import foo.FooItemsService
-import foo.dto.*
-import foo.dto.CircleCodecs.given
-import foo.dto.FooItemApiId.toApiString
-import foo.dto.FooItemsFilterApi.given
-import foo.model.*
+import foo.api.dto.CircleCodecs.given
+import foo.api.dto.FooItemApiId.toApiString
+import foo.api.dto.FooItemsFilterApi.given
+import foo.api.dto.*
+import foo.domain.FooItemsService
+import foo.domain.model.NewFooItem
 import org.http4s.*
 import org.http4s.Header.*
 import org.http4s.circe.*

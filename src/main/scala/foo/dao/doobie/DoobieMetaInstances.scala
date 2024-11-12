@@ -1,7 +1,7 @@
 package foo.dao.doobie
 
 import doobie.Meta
-import foo.model.{FooItemId, FooItemName, FooItemText, FooItemType}
+import foo.domain.model.{FooItemId, FooItemName, FooItemText, FooItemType}
 
 private[doobie] given metaFooItemId: Meta[FooItemId] =
   Meta[Long].imap(FooItemId.apply) { case FooItemId(id) => id }

@@ -4,7 +4,7 @@ import cats.syntax.all.*
 import doobie.implicits.*
 import doobie.util.Put
 import doobie.{Fragment, Fragments}
-import foo.model.{FooItemName, FooItemText, FooItemsFilter}
+import foo.domain.model.{FooItemName, FooItemText, FooItemsFilter}
 
 final case class FooItemsDoobieQuery(
   itemName: Option[Fragment],

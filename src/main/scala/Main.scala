@@ -7,10 +7,10 @@ import config.Config
 import doobie.LogHandler
 import doobie.util.log.LogEvent
 import doobie.util.transactor.Transactor
-import foo.FooItemsService
+import foo.api.fooItemsRoutes
 import foo.dao.doobie.FooRepoDoobie
 import foo.dao.skunk.FooRepoSkunk
-import foo.routes.fooItemsRoutes
+import foo.domain.FooItemsService
 import fs2.io.net.Network
 import natchez.Trace
 import natchez.Trace.Implicits.noop

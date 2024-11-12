@@ -1,4 +1,4 @@
-package foo.model
+package foo.domain.model
 
 import cats.data.NonEmptyList
 

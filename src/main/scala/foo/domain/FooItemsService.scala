@@ -1,9 +1,8 @@
-package foo
+package foo.domain
 
 import cats.effect.kernel.Concurrent
 import cats.effect.std.Console
-import foo.dao.FooRepo
-import foo.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
+import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
 class FooItemsService[F[_] : Concurrent : Console](repo: FooRepo[F]):
 

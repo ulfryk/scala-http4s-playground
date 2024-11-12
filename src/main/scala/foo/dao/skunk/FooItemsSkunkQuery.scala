@@ -3,7 +3,7 @@ package foo.dao.skunk
 import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
-import foo.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
+import foo.domain.model.{FooItemName, FooItemText, FooItemType, FooItemsFilter}
 import skunk.*
 import skunk.codec.all.*
 import skunk.syntax.all.*

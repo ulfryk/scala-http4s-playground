@@ -4,8 +4,8 @@ import cats.*
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
-import foo.dao.FooRepo
-import foo.model.*
+import foo.domain.FooRepo
+import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 import skunk.*
 import skunk.syntax.all.*
 

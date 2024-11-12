@@ -4,8 +4,8 @@ import cats.Functor
 import cats.effect.Async
 import doobie.*
 import doobie.implicits.*
-import foo.dao.FooRepo
-import foo.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
+import foo.domain.FooRepo
+import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
 final class FooRepoDoobie[F[_] : Async : Functor] private(tx: Transactor[F]) extends FooRepo[F]:
 

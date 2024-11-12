@@ -1,6 +1,6 @@
 package fixtures
 
-import common.dto.ApiAnyId
+import common.api.dto.ApiAnyId
 import common.model.AnyId
 
 opaque type TestId = Long

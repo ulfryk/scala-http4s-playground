@@ -1,7 +1,7 @@
 package foo.dao.skunk
 
 import cats.syntax.all.*
-import foo.model.*
+import foo.domain.model.{FooItem, FooItemId, FooItemName, FooItemText, FooItemType, NewFooItem}
 import skunk.*
 import skunk.codec.all.*
 

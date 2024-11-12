@@ -1,7 +1,7 @@
-package foo.dto
+package foo.api.dto
 
 import cats.data.{Validated, ValidatedNel}
-import foo.model.FooItemType
+import foo.domain.model.FooItemType
 import org.http4s.dsl.io.OptionalMultiQueryParamDecoderMatcher
 import org.http4s.{ParseFailure, QueryParamDecoder}
 
