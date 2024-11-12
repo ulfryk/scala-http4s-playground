@@ -38,7 +38,7 @@ trait ApiAnyId[T](prefix: String, impl: AnyId[T]):
     if (str.isEmpty) invalidNec(MissingId()).some
     else parse(str).leftMap(_.map(e => MalformedId(str, e))).some
 
-  private def parse(id: String): ValidatedNec[IdParsingFail, T] =
+  def parse(id: String): ValidatedNec[IdParsingFail, T] =
     (for {
       x <- splitRawId(id)
       _ <- checkPrefix(x._1)
