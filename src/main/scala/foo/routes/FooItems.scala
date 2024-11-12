@@ -7,6 +7,7 @@ import cats.implicits.*
 import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
 import foo.FooItemsService
 import foo.dto.*
+import foo.dto.FooItemsFilterApi.given
 import foo.model.*
 import fs2.*
 import org.http4s.*
@@ -66,7 +67,7 @@ def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
     :? TypeQueryParam.Matcher(itemType)
     +& NameQueryParam.Matcher(itemName)
     +& TextQueryParam.Matcher(itemText) =>
-    listIt(FooItemsFilter(itemName, itemText, itemType), service)
+    listIt(FooItemsFilterApi(itemName, itemText, itemType), service)
 
   case GET -> Root / "foo-items" / FooItemApiId(id) =>
     id match

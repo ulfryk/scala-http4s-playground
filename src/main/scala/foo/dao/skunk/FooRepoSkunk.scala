@@ -5,7 +5,6 @@ import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
 import foo.dao.FooRepo
-import foo.dto.FooItemsFilter
 import foo.model.*
 import skunk.*
 import skunk.syntax.all.*

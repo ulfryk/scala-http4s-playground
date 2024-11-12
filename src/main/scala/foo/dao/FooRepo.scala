@@ -1,7 +1,6 @@
 package foo.dao
 
-import foo.dto.FooItemsFilter
-import foo.model.{FooItem, FooItemId, NewFooItem}
+import foo.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
 trait FooRepo[F[_]]:
 

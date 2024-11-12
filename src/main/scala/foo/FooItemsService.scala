@@ -4,8 +4,7 @@ import cats.effect.kernel.Concurrent
 import cats.effect.std.Console
 import cats.implicits.*
 import foo.dao.FooRepo
-import foo.dto.FooItemsFilter
-import foo.model.{FooItem, FooItemId, NewFooItem}
+import foo.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
 class FooItemsService[F[_] : Concurrent : Console](repo: FooRepo[F]):
 

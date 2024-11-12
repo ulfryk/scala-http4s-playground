@@ -7,7 +7,6 @@ import org.http4s.{ParseFailure, QueryParamDecoder}
 
 import scala.util.Try
 
-
 object TypeQueryParam:
   object Matcher extends OptionalMultiQueryParamDecoderMatcher[FooItemType]("type")
 
@@ -18,4 +17,3 @@ object TypeQueryParam:
 
   private given typeQueryParamDecoder: QueryParamDecoder[FooItemType] =
     QueryParamDecoder[String].emapValidatedNel(validateFooItemTypeFromString)
-

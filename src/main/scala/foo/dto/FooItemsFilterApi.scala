@@ -3,19 +3,10 @@ package foo.dto
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.implicits.*
 import common.helpers.swapInnerValidated
-import foo.model.{FooItemName, FooItemType}
+import foo.model.{FooItemName, FooItemType, FooItemsFilter}
 import org.http4s.ParseFailure
 
-
-case class FooItemsFilter(
-  name: Option[FooItemName],
-  text: Option[String],
-  `type`: Option[NonEmptyList[FooItemType]],
-)
-
-object FooItemsFilter:
-  final val empty = FooItemsFilter(None, None, None)
-  
+object FooItemsFilterApi:
   given toRaw: (FooItemsFilter => Seq[(String, String)]) = { f =>
     List(
       f.name.map(n => ("name", n.value)),

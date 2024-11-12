@@ -5,8 +5,7 @@ import doobie.implicits.*
 import doobie.util.Put
 import doobie.{Fragment, Fragments}
 import foo.dao.doobie.FooItemsDoobieQuery
-import foo.dto.FooItemsFilter
-import foo.model.FooItemName
+import foo.model.{FooItemName, FooItemsFilter}
 
 final case class FooItemsDoobieQuery(
   itemName: Option[Fragment],

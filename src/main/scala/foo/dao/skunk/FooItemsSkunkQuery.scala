@@ -4,8 +4,7 @@ import cats.*
 import cats.data.NonEmptyList
 import cats.syntax.all.*
 import foo.dao.skunk.FooItemsSkunkQuery
-import foo.dto.FooItemsFilter
-import foo.model.{FooItemName, FooItemType}
+import foo.model.{FooItemName, FooItemType, FooItemsFilter}
 import skunk.*
 import skunk.codec.all.*
 import skunk.syntax.all.*
