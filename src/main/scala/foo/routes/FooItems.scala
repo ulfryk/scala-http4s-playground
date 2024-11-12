@@ -4,11 +4,13 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
 import cats.implicits.*
+import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
 import foo.FooItemsService
 import foo.dto.*
 import foo.model.*
 import fs2.*
 import org.http4s.*
+import org.http4s.Header.*
 import org.http4s.dsl.io.*
 
 import scala.util.Try
@@ -22,7 +24,9 @@ private def listIt(
     case Valid(a) =>
       for
         r <- service.getAll(a)
-        resp <- Ok(listRespText(r._1, r._2))
+        resp <- Ok(listRespText(r._1, r._2)).map { x =>
+          x.copy(headers = x.headers ++ `Pagination-Total-Count`(r._2.size) ++ `Pagination-Applied-Filter`(r._1))
+        }
       yield resp
 
 private def listRespText(filter: FooItemsFilter, items: List[FooItem]): String =

@@ -15,6 +15,14 @@ case class FooItemsFilter(
 
 object FooItemsFilter:
   final val empty = FooItemsFilter(None, None, None)
+  
+  given toRaw: (FooItemsFilter => Seq[(String, String)]) = { f =>
+    List(
+      f.name.map(n => ("name", n.value)),
+      f.text.map(t => ("text", t)),
+      f.`type`.map(tp => ("type", tp.toList.mkString("|")))
+    ).flatten
+  }
 
   def apply(
     nameParams: Option[ValidatedNel[ParseFailure, FooItemName]],
