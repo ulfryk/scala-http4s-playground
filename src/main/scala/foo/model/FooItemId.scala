@@ -2,5 +2,6 @@ package foo.model
 
 import common.model.AnyId
 
-object FooItemId extends AnyId("foo")
-type FooItemId = FooItemId.Identifier
+opaque type FooItemId = Long
+
+object FooItemId extends AnyId[FooItemId](identity, identity)

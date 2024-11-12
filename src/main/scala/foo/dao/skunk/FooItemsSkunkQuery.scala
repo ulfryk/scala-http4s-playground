@@ -33,5 +33,5 @@ object FooItemsSkunkQuery:
   private val textSql = sql"item_text ILIKE $encFooTextILike"
 
   private def typeMultiSql(types: NonEmptyList[FooItemType]) =
-    if (types.tail.isEmpty) sql"item_type = $encFooType"(types.head)
-    else sql"item_type IN (${encFooType.list(types.size)})"(types.toList)
+    if (types.tail.isEmpty) sql"item_type = $codecFooType"(types.head)
+    else sql"item_type IN (${codecFooType.list(types.size)})"(types.toList)

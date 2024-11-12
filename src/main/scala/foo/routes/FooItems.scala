@@ -7,6 +7,7 @@ import cats.implicits.*
 import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
 import foo.FooItemsService
 import foo.dto.*
+import foo.dto.FooItemApiId.toApiString
 import foo.dto.FooItemsFilterApi.given
 import foo.model.*
 import fs2.*
@@ -81,6 +82,5 @@ def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
       case Invalid(es) => BadRequest {
         es.foldLeft("")((txt, next) => txt ++ next.message)
       }
-
 
 }

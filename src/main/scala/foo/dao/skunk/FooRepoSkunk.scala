@@ -22,7 +22,7 @@ final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val sessio
 
   override def findItem(id: FooItemId): F[Option[FooItem]] =
     for
-      query <- session.prepare(sql"SELECT * FROM foo_items WHERE id = $encFooId".query(decFooItem))
+      query <- session.prepare(sql"SELECT * FROM foo_items WHERE id = $codecFooId".query(decFooItem))
       found <- query.option(id)
     yield found
 
