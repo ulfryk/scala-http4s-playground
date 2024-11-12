@@ -9,7 +9,7 @@ import foo.model.*
 import skunk.*
 import skunk.syntax.all.*
 
-class FooRepoSkunk[F[_] : Concurrent : Console] private(private val session: Session[F]) extends FooRepo[F] {
+final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val session: Session[F]) extends FooRepo[F]:
 
   override def createItem(fooItem: NewFooItem): F[FooItem] =
     session.prepare(
@@ -27,15 +27,13 @@ class FooRepoSkunk[F[_] : Concurrent : Console] private(private val session: Ses
     yield found
 
   override def findItems(filter: FooItemsFilter): F[List[FooItem]] =
-    val applied = listQuery(FooItemsQuery(filter))
+    val applied = listQuery(FooItemsSkunkQuery(filter))
     session.prepare(applied.fragment.query(decFooItem))
       .flatMap(_.stream(applied.argument, 16).compile.toList)
 
-  private def listQuery(query: FooItemsQuery): AppliedFragment =
+  private def listQuery(query: FooItemsSkunkQuery): AppliedFragment =
     val base = sql"SELECT * FROM foo_items"
     base(Void) |+| query.asFragment
-
-}
 
 object FooRepoSkunk:
   def apply[F[_] : Concurrent : Console](session: Session[F]): F[FooRepo[F]] =
