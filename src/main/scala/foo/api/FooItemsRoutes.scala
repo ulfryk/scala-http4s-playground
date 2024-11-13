@@ -22,7 +22,6 @@ import org.http4s.Header.*
 import org.http4s.circe.*
 import org.http4s.dsl.io.*
 
-
 def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
   case req @ POST -> Root / "foo-items" =>
     for
@@ -62,7 +61,7 @@ def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
                 cause = None,
               ))
         yield resp
-      case Invalid(es) => 
+      case Invalid(es) =>
         IO.raiseError(ApiKaboom(
           message = "Invalid path params.",
           code = ErrorCode.Invalid,
