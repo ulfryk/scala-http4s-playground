@@ -1,12 +1,20 @@
+import _root_.io.circe.*
+import _root_.io.circe.generic.auto.*
+import _root_.io.circe.syntax.*
 import cats.*
 import cats.effect.*
 import cats.effect.std.Console
 import cats.implicits.*
 import com.comcast.ip4s.*
+import common.api.dto.ErrorResponse
+import common.api.dto.ErrorResponse.given
+import common.model.Kaboom.{ApiKaboom, InternalKaboom}
+import common.model.{ErrorCode, ErrorIssue, ErrorIssueLocation, Kaboom}
 import config.Config
 import doobie.LogHandler
 import doobie.util.log.LogEvent
 import doobie.util.transactor.Transactor
+import foo.api.dto.MalformedFilter
 import foo.api.fooItemsRoutes
 import foo.dao.doobie.FooRepoDoobie
 import foo.dao.skunk.FooRepoSkunk
@@ -15,6 +23,10 @@ import fs2.io.net.Network
 import natchez.Trace
 import natchez.Trace.Implicits.noop
 import org.http4s.*
+import org.http4s.Header.*
+import org.http4s.Status.*
+import org.http4s.circe.*
+import org.http4s.dsl.io.*
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Router
 import org.http4s.server.middleware.Logger
@@ -48,12 +60,36 @@ object Main extends IOApp:
       logHandler = Some { logEvent => Console[F].println(logEvent) }
     )
 
+  private def unifyError(err: Throwable): Kaboom = err match
+    case err: Kaboom => err
+    case err @ MalformedFilter(errs) => ApiKaboom(
+      message = err.getMessage,
+      code = ErrorCode.Invalid,
+      issues = errs.map(w => ErrorIssue(ErrorIssueLocation.QueryParams, "query", w.sanitized)).some,
+      cause = err.some,
+    )
+    case x => InternalKaboom(
+      message = "Something went wrong.",
+      cause = x.some,
+    )
+
   private def startServer(service: FooItemsService[IO]) =
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")
       .withPort(port"8111")
       .withHttpApp(httpAppLogged(service))
+      .withErrorHandler { err =>
+        unifyError(err) match
+          case e: ApiKaboom =>
+            val resp = ErrorResponse(e).asJson
+            e.code match
+              case ErrorCode.Invalid => BadRequest(resp)
+              case ErrorCode.Conflict => Conflict(resp)
+              case ErrorCode.Internal => InternalServerError(resp)
+              case ErrorCode.NotFound => NotFound(resp)
+          case e: InternalKaboom => InternalServerError(ErrorResponse(e).asJson)
+      }
       .build
       .useForever
 

@@ -27,7 +27,7 @@ object FooItemsFilterApi:
     }
 
 final case class MalformedFilter(errs: NonEmptyList[ParseFailure]) extends RuntimeException:
-  override def getMessage = s"kaboom - failed to parse query filter due to: ${errs.toList.mkString(", ")}"
+  override def getMessage = s"kaboom - failed to parse query filter"
 
 extension (v: ValidatedNel[ParseFailure, FooItemsFilter])
   def raiseIoErrorOnFailure: IO[FooItemsFilter] = v match

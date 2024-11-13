@@ -3,11 +3,14 @@ package foo.api
 import _root_.io.circe.*
 import _root_.io.circe.generic.auto.*
 import _root_.io.circe.syntax.*
-import cats.data.Validated
+import cats.data.{NonEmptyList, Validated}
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.*
 import cats.implicits.*
 import common.api.headers.{`Pagination-Applied-Filter`, `Pagination-Total-Count`}
+import common.model.ErrorIssueLocation.PathParams
+import common.model.{ErrorCode, ErrorIssue}
+import common.model.Kaboom.ApiKaboom
 import foo.api.dto.*
 import foo.api.dto.CircleCodecs.given
 import foo.api.dto.FooItemApiId.toApiString
@@ -49,10 +52,24 @@ def fooItemsRoutes(service: FooItemsService[IO]) = HttpRoutes.of[IO] {
           found <- service.getOne(idVal)
           resp <- found match
             case Some(item) => Ok(item.asJson)
-            case None => NotFound(s"couldn't find ${idVal.toApiString}")
+            case None =>
+              IO.raiseError(ApiKaboom(
+                message = "Foo Item not found.",
+                code = ErrorCode.NotFound,
+                issues = NonEmptyList.one(
+                  ErrorIssue(PathParams, ":fooItemId", s"couldn't find ${idVal.toApiString}"),
+                ).some,
+                cause = None,
+              ))
         yield resp
-      case Invalid(es) => BadRequest {
-        es.foldLeft("")(_ ++ _.message)
-      }
+      case Invalid(es) => 
+        IO.raiseError(ApiKaboom(
+          message = "Invalid path params.",
+          code = ErrorCode.Invalid,
+          issues = NonEmptyList.one(
+            ErrorIssue(PathParams, ":fooItemId", es.foldLeft("")(_ ++ _.message)),
+          ).some,
+          cause = None,
+        ))
 
 }
