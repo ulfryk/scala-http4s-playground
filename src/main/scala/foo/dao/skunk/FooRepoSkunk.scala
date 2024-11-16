@@ -36,5 +36,5 @@ final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val sessio
     base(Void) |+| query.asFragment
 
 object FooRepoSkunk:
-  def apply[F[_] : Concurrent : Console](session: Session[F]): F[FooRepo[F]] =
-    new FooRepoSkunk(session).pure[F]
+  def apply[F[_] : Concurrent : Console](session: Session[F]): FooRepo[F] =
+    new FooRepoSkunk(session)

@@ -32,8 +32,9 @@ object Main extends IOApp:
 
   private def runWithSkunk(conf: Config) =
     getSkunkSession[IO](conf).use { session =>
-      FooRepoSkunk(session)
-        .flatMap(r => startServer(FooItemsService(r)))
+      val repo = FooRepoSkunk(session)
+      val service = FooItemsService(repo)
+      startServer(service)
     }
 
   private def runWithDoobie(config: Config) =
