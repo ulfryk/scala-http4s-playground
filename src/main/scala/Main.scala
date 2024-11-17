@@ -7,8 +7,8 @@ import config.Config
 import foo.api.error.unifyError
 import foo.api.fooItemsRoutes
 import foo.dao.doobie.FooRepoDoobie
-import foo.dao.skunk.FooRepoSkunk
-import foo.domain.FooItemsService
+import foo.dao.skunk.{FooRepoSkunk, skunkQ}
+import foo.domain.{FooItemsService, FooItemsServiceF, FooItemsServiceTF}
 import fs2.io.net.Network
 import infra.{getDoobieTransactor, getSkunkSession, httpAppLogged}
 import natchez.Trace
@@ -33,14 +33,15 @@ object Main extends IOApp:
   private def runWithSkunk(conf: Config) =
     getSkunkSession[IO](conf).use { session =>
       val repo = FooRepoSkunk(session)
-      val service = FooItemsService(repo)
-      startServer(service)
+      val serviceTF = FooItemsServiceTF(repo)
+      val serviceF = FooItemsServiceF(skunkQ(session))
+      startServer(serviceF)
     }
 
   private def runWithDoobie(config: Config) =
     val transactor = getDoobieTransactor[IO](config)
     val repo = FooRepoDoobie(transactor)
-    val service = FooItemsService(repo)
+    val service = FooItemsServiceTF(repo)
     startServer(service)
 
   def run(args: List[String]): IO[ExitCode] =

@@ -1,16 +1,8 @@
 package foo.domain
 
-import cats.effect.kernel.Concurrent
-import cats.effect.std.Console
 import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
-class FooItemsService[F[_] : Concurrent : Console](repo: FooRepo[F]):
-
-  def create(input: NewFooItem): F[FooItem] =
-    repo.createItem(input)
-
-  def getAll(filter: FooItemsFilter): F[List[FooItem]] =
-    repo.findItems(filter)
-
-  def getOne(id: FooItemId): F[Option[FooItem]] =
-    repo.findItem(id)
+trait FooItemsService[F[_]]:
+  def create(input: NewFooItem): F[FooItem]
+  def getAll(filter: FooItemsFilter): F[List[FooItem]]
+  def getOne(id: FooItemId): F[Option[FooItem]]

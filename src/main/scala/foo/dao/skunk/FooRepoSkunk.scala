@@ -4,12 +4,12 @@ import cats.*
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
-import foo.domain.FooRepo
+import foo.domain.FooRepoTF
 import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 import skunk.*
 import skunk.syntax.all.*
 
-final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val session: Session[F]) extends FooRepo[F]:
+final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val session: Session[F]) extends FooRepoTF[F]:
 
   override def createItem(fooItem: NewFooItem): F[FooItem] =
     session.prepare(
@@ -36,5 +36,5 @@ final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val sessio
     base(Void) |+| query.asFragment
 
 object FooRepoSkunk:
-  def apply[F[_] : Concurrent : Console](session: Session[F]): FooRepo[F] =
+  def apply[F[_] : Concurrent : Console](session: Session[F]): FooRepoTF[F] =
     new FooRepoSkunk(session)

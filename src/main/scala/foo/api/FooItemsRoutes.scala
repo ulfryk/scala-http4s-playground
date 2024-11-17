@@ -14,7 +14,7 @@ import foo.api.dto.CircleCodecs.given
 import foo.api.dto.FooItemApiId.toApiString
 import foo.api.dto.FooItemsFilterApi.given
 import foo.api.error.*
-import foo.domain.FooItemsService
+import foo.domain.{FooItemsService, FooItemsServiceTF}
 import foo.domain.model.NewFooItem
 import org.http4s.*
 import org.http4s.Header.*

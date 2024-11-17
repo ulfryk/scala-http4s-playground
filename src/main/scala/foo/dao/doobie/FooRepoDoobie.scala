@@ -4,10 +4,10 @@ import cats.Functor
 import cats.effect.Async
 import doobie.*
 import doobie.implicits.*
-import foo.domain.FooRepo
+import foo.domain.FooRepoTF
 import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 
-final class FooRepoDoobie[F[_] : Async : Functor] private(tx: Transactor[F]) extends FooRepo[F]:
+final class FooRepoDoobie[F[_] : Async : Functor] private(tx: Transactor[F]) extends FooRepoTF[F]:
 
   override def createItem(fooItem: NewFooItem): F[FooItem] =
     sql"""
@@ -31,4 +31,4 @@ final class FooRepoDoobie[F[_] : Async : Functor] private(tx: Transactor[F]) ext
       .transact(tx)
 
 object FooRepoDoobie:
-  def apply[F[_] : Async](tx: Transactor[F]): FooRepo[F] = new FooRepoDoobie(tx)
+  def apply[F[_] : Async](tx: Transactor[F]): FooRepoTF[F] = new FooRepoDoobie(tx)
