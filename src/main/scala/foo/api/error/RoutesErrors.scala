@@ -2,7 +2,7 @@ package foo.api.error
 
 import cats.data.NonEmptyList
 import common.helpers.some
-import common.model.ErrorIssueLocation.{PathParams, QueryParams}
+import common.model.ErrorIssueLocation.{Headers, PathParams, QueryParams}
 import common.model.Kaboom.ApiKaboom
 import common.model.{ErrorCode, ErrorIssue, ErrorIssueLocation}
 import org.http4s.ParseFailure
@@ -25,5 +25,12 @@ def invalidQParams(errs: NonEmptyList[ParseFailure]) = ApiKaboom(
   message = "Invalid query params.",
   code = ErrorCode.Invalid,
   issues = errs.map(w => ErrorIssue(QueryParams, "query", w.sanitized)).some,
+  cause = None,
+)
+
+def invalidHeaders(errs: NonEmptyList[(String, String)]) = ApiKaboom(
+  message = "Invalid headers.",
+  code = ErrorCode.Invalid,
+  issues = errs.map((k, v) => ErrorIssue(Headers, k, v)).some,
   cause = None,
 )

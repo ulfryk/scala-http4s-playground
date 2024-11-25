@@ -15,3 +15,4 @@ class FooItemsServiceF[F[_] : Concurrent : Console](natTrans: FooQueryF ~> F) ex
   def create(input: NewFooItem): F[FooItem] = createF(input).foldMap(natTrans)
   def getAll(filter: FooItemsFilter): F[List[FooItem]] = readAllF(filter).foldMap(natTrans)
   def getOne(id: FooItemId): F[Option[FooItem]] = readF(id).foldMap(natTrans)
+  def createMany(input: List[NewFooItem]): F[Int] = ???

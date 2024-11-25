@@ -35,7 +35,7 @@ object Main extends IOApp:
       val repo = FooRepoSkunk(session)
       val serviceTF = FooItemsServiceTF(repo)
       val serviceF = FooItemsServiceF(skunkQ(session))
-      startServer(serviceF)
+      startServer(serviceTF)
     }
 
   private def runWithDoobie(config: Config) =

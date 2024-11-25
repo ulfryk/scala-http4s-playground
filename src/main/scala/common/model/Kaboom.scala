@@ -32,6 +32,7 @@ final case class ErrorIssue(
 enum ErrorIssueLocation {
   case QueryParams
   case PathParams
+  case Headers
   case Payload
   case Internal
 }
