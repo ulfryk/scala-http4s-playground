@@ -45,7 +45,7 @@ def fooItemsRoutes(service: FooItemsService[IO])(using MonadThrow[IO]) = HttpRou
             .compile
             .toList
           created <- service.createMany(input)
-          resp <- NoContent()
+          resp <- Ok(created.asJson)
         yield resp.putHeaders("X-Created-Count" -> created.toString)
 
       case theContentType => IO.raiseError(

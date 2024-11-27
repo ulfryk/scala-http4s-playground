@@ -20,7 +20,7 @@ final class FooRepoSkunk[F[_] : Concurrent : Console] private(private val sessio
       """.query(decFooItem)
     ).flatMap(_.unique(fooItem))
 
-  def createMany(input: List[NewFooItem]): F[Int] = ???
+  def createMany(input: List[NewFooItem]): F[List[FooItem]] = ???
 
   def findItem(id: FooItemId): F[Option[FooItem]] =
     for

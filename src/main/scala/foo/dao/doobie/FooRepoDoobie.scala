@@ -1,8 +1,5 @@
 package foo.dao.doobie
 
-//import cats.implicits.*
-import cats.Foldable
-//import cats.syntax.ListOps.given
 import cats.Functor
 import cats.effect.Async
 import doobie.*
@@ -13,22 +10,18 @@ import foo.domain.model.{FooItem, FooItemId, FooItemsFilter, NewFooItem}
 final class FooRepoDoobie[F[_] : Async : Functor] private(tx: Transactor[F]) extends FooRepoTF[F]:
 
   def createItem(fooItem: NewFooItem): F[FooItem] =
-    sql"""
-         INSERT INTO foo_items (item_name, item_text, item_type)
-         VALUES ($fooItem)
-       """
-      .update
+    insert.toUpdate0(fooItem)
       .withUniqueGeneratedKeys[FooItem]("id", "item_name", "item_text", "item_type")
       .transact(tx)
 
-  def createMany(input: List[NewFooItem]): F[Int] =
-    Update[NewFooItem](
-      """
-         INSERT INTO foo_items (item_name, item_text, item_type)
-         VALUES (?, ?, ?)
-       """)
-      .updateMany(input)
+  def createMany(input: List[NewFooItem]): F[List[FooItem]] =
+    insert
+      .updateManyWithGeneratedKeys[FooItem]("id", "item_name", "item_text", "item_type")(input)
       .transact(tx)
+      .compile.toList
+
+  private def insert = Update[NewFooItem](
+    "INSERT INTO foo_items (item_name, item_text, item_type) VALUES (?, ?, ?)")
 
   def findItem(id: FooItemId): F[Option[FooItem]] =
     sql"SELECT * FROM foo_items WHERE id = $id"
